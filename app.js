@@ -1,11 +1,10 @@
 const [command, key, value] = process.argv.slice(2);
-const fs = require("fs");
+const { readPasswords, writePasswords } = require("./lib/passwords");
 
 function get() {
   try {
-    const dbJSON = fs.readFileSync("db.json", "utf8");
-    const passwords = JSON.parse(dbJSON);
-    console.log(passwords["wifi"], passwords[key]);
+    const passwords = readPasswords();
+    console.log(key, passwords[key]);
   } catch (error) {
     console.error(error);
   }
@@ -13,25 +12,21 @@ function get() {
 
 function set() {
   console.log("Called SET", key, value);
-  const dbJSON = fs.readFileSync("db.json", "utf8");
-  const passwords = JSON.parse(dbJSON);
-  passwords[key] = value;
-  console.log(passwords[key]);
   try {
-    fs.writeFileSync("db.json", JSON.stringify(passwords, null, 2));
+    const passwords = readPasswords();
+    passwords[key] = value;
+    writePasswords(passwords);
   } catch (error) {
     console.error(error);
   }
 }
 
 function unset() {
-  console.log("Called SET", key, value);
-  const dbJSON = fs.readFileSync("db.json", "utf8");
-  const passwords = JSON.parse(dbJSON);
-  delete passwords[key];
-  console.log(passwords[key]);
+  console.log("Called UNSET", key);
   try {
-    fs.writeFileSync("db.json", JSON.stringify(passwords, null, 2));
+    const passwords = readPasswords();
+    delete passwords[key];
+    writePasswords(passwords);
   } catch (error) {
     console.error(error);
   }
